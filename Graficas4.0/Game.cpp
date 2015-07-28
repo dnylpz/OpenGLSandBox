@@ -6,41 +6,43 @@
 #include<vector>
 #include<string>
 #include<stdio.h>
+#include"Transform.h"
+#include<glm\glm.hpp>
+#include<glm\gtx\transform.hpp>
 
 void key_callback(GLFWwindow*, int, int, int, int);
 
 //constructors
 Game::Game(){
 
-	this->window = initializeWindow(800, 600);
+	this->window = initializeWindow(800,600);
 	glfwSetKeyCallback(this->window, key_callback);
 
 }
 Game::Game(int width, int height){
-	this->window = initializeWindow(width, height);
+	this->window = initializeWindow(width,height);
 	glfwSetKeyCallback(this->window, key_callback);
 #pragma region triangle_Data
-		GLfloat triangleVertices[] = {
+	glm::mat3 triangleVertices(
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
 		0.0f, 0.5f, 0.0f
-	};
-		glGenVertexArrays(1, &this->triangleVAO);
-		glBindVertexArray(this->triangleVAO);
-		GLuint triangleVBO;
-		glGenBuffers(1, &triangleVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-		GLuint triangleVertexShader = compileShader("VertexShader.glsl", GL_VERTEX_SHADER);
-		GLuint triangleFragmentShader = compileShader("FragmentShader.glsl",GL_FRAGMENT_SHADER);
-		this->triangleShaderProgram = linkShader(triangleVertexShader,triangleFragmentShader);
-		
-		glDeleteShader(triangleVertexShader);
-		glDeleteShader(triangleFragmentShader);
-	#pragma endregion
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLAT), (void*)0);
-		glEnableVertexAttribArray(0);
-		glBindVertexArray(0);
+		);
+	glGenVertexArrays(1, &this->triangleVAO);
+	glBindVertexArray(this->triangleVAO);
+	GLuint triangleVBO;
+	glGenBuffers(1, &triangleVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), &triangleVertices, GL_STATIC_DRAW);
+	GLuint triangleVertexShader = compileShader("VertexShader.glsl", GL_VERTEX_SHADER);
+	GLuint triangleFragmentShader = compileShader("FragmentShader.glsl",GL_FRAGMENT_SHADER);
+	this->triangleShaderProgram = linkShader(triangleVertexShader,triangleFragmentShader);
+	glDeleteShader(triangleVertexShader);
+	glDeleteShader(triangleFragmentShader);
+#pragma endregion
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLAT), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 }
 //app cycle
 void Game::run(){
@@ -77,14 +79,14 @@ void key_callback(GLFWwindow* wind, int key, int scancode, int action, int mode)
 
 
 //utility functions.
-GLFWwindow* Game::initializeWindow(int width, int height){
+GLFWwindow* Game::initializeWindow(int width,int height){
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* wind = glfwCreateWindow(width, height, "Survive", nullptr, nullptr);
+	GLFWwindow* wind = glfwCreateWindow(width, height, "Survive", glfwGetPrimaryMonitor() , nullptr); //change to glfwGetPrimaryMonitor to fullscreen;
 	if (wind == nullptr){
 		glfwTerminate();
 		return nullptr;
@@ -184,4 +186,22 @@ GLuint Game::linkShader(GLuint vertexShader, GLuint fragmentShader){
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER LINKING FAILED" << infoLog;
 	}
+}
+
+void Game::computeMatricesFromInputs(mat4&, mat4&, mat4&){
+
+	vec3 position = vec3(0, 0, 5);
+	float horizontalAngle = 3.14f;
+	float verticalAngle = 0.0f;
+	float initialFoV = 45.0f;
+
+	float speed = 3.0f;
+	float mouseSpeed = 0.005f;
+
+	//getting mouse Position
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	
+	//glfwGetWindowSize(window, &width, &height);
+	//glfwSetCursorPos(window, width/2,height/2);
 }

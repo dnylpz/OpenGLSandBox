@@ -1,8 +1,9 @@
 #pragma once
 #include<GL\glew.h>
 #include<GLFW\glfw3.h>
+#include<glm\glm.hpp>
 
-
+using namespace glm;
 class Game{
 public:
 	//constructors
@@ -15,7 +16,9 @@ public:
 	GLFWwindow* window;
 	GLuint triangleShaderProgram;
 	GLuint triangleVAO;
-	
+	mat4 modelMatrix;
+	mat4 projectionMatrix;
+	mat4 viewMatrix;
 
 	
 	//functions
@@ -23,6 +26,6 @@ public:
 	GLFWwindow* initializeWindow(int,int);
 	GLuint compileShader(char*, int);
 	GLuint linkShader(GLuint, GLuint);
-
+	void computeMatricesFromInputs(mat4&, mat4&, mat4&);
 
 };
