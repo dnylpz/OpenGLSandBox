@@ -8,7 +8,6 @@ class Game{
 public:
 	//constructors
 	Game();
-	Game(int, int);
 	~Game();
 
 
@@ -16,16 +15,15 @@ public:
 	GLFWwindow* window;
 	GLuint triangleShaderProgram;
 	GLuint triangleVAO;
-	mat4 modelMatrix;
-	mat4 projectionMatrix;
-	mat4 viewMatrix;
+	float modelMatrix[4][4];
+	float projectionMatrix[4][4];
+	float viewMatrix[4][4];
 
 	
 	//functions
 	void run();
-	GLFWwindow* initializeWindow(int,int);
+	GLFWwindow* initializeWindow();
 	GLuint compileShader(char*, int);
 	GLuint linkShader(GLuint, GLuint);
-	void computeMatricesFromInputs(mat4&, mat4&, mat4&);
 
 };
