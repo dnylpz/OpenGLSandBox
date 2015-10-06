@@ -60,17 +60,11 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
-      <Filter>Header Files\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\AI</Filter>
     </ClInclude>
     <ClInclude Include="ModelTransforms.h">
       <Filter>Header Files\Graphics</Filter>
@@ -91,9 +85,6 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller.cpp">
-      <Filter>Source Files\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

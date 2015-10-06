@@ -26,6 +26,5 @@ public:
 	GLFWwindow* initializeWindow(int,int);
 	GLuint compileShader(char*, int);
 	GLuint linkShader(GLuint, GLuint);
-	void computeMatricesFromInputs(mat4&, mat4&, mat4&);
 
 };

@@ -44,6 +44,7 @@ Game::Game(int width, int height){
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 }
+
 //app cycle
 void Game::run(){
 	while (!glfwWindowShouldClose(this->window)){
@@ -86,7 +87,7 @@ GLFWwindow* Game::initializeWindow(int width,int height){
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow* wind = glfwCreateWindow(width, height, "Survive", glfwGetPrimaryMonitor() , nullptr); //change to glfwGetPrimaryMonitor to fullscreen;
+	GLFWwindow* wind = glfwCreateWindow(width, height, "Survive",NULL , nullptr); //change to glfwGetPrimaryMonitor to fullscreen;
 	if (wind == nullptr){
 		glfwTerminate();
 		return nullptr;
@@ -114,7 +115,7 @@ a_iType - type of shader (fragment, vertex, geometry)
 
 Result:	Loads and compiles shader.
 
-/*---------------------------------------------*/
+---------------------------------------------*/
 GLuint Game::compileShader(char* path, int shader_mode){
 	GLuint shaderID;
 	FILE *fp;
@@ -172,7 +173,7 @@ fragmentShader - pointer to FS
 
 Result:	links the shaders
 
-/*---------------------------------------------*/
+---------------------------------------------*/
 GLuint Game::linkShader(GLuint vertexShader, GLuint fragmentShader){
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
@@ -188,20 +189,3 @@ GLuint Game::linkShader(GLuint vertexShader, GLuint fragmentShader){
 	}
 }
 
-void Game::computeMatricesFromInputs(mat4&, mat4&, mat4&){
-
-	vec3 position = vec3(0, 0, 5);
-	float horizontalAngle = 3.14f;
-	float verticalAngle = 0.0f;
-	float initialFoV = 45.0f;
-
-	float speed = 3.0f;
-	float mouseSpeed = 0.005f;
-
-	//getting mouse Position
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
-	
-	//glfwGetWindowSize(window, &width, &height);
-	//glfwSetCursorPos(window, width/2,height/2);
-}
