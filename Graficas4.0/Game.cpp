@@ -6,8 +6,7 @@
 #include<vector>
 #include<string>
 #include<stdio.h>
-#include<glm\glm.hpp>
-#include<glm\gtx\transform.hpp>
+
 
 void key_callback(GLFWwindow*, int, int, int, int);
 
@@ -19,17 +18,11 @@ Game::Game(){
 	glfwSetKeyCallback(this->window, key_callback);
 #pragma region triangle_Data
 
-	/*
-	glm::mat3 triangleVertices(
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f, 0.5f, 0.0f
-	);
-	*/
-	float triangleVertices[4][4] = {
+
+	float triangleVertices[3][3] = {
 		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.f
+		0.5f, -0.5f, 0.0f, 
+		0.0f, 0.5f, 0.0f
 	};
 	glGenVertexArrays(1, &this->triangleVAO);
 	glBindVertexArray(this->triangleVAO);

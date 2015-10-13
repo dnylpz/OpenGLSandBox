@@ -1,4 +1,4 @@
-﻿Build started 10/6/2015 4:10:55 PM.
+﻿Build started 10/8/2015 11:15:35 AM.
      1>Project "C:\Users\jose.espinoza.lopez\Documents\C++ Proyects\OpenGLSandBox.git\Graficas4.0\Graficas4.0.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\jose.espinoza.lopez\Desktop\Graficas4.0\Graficas4.0\Dependencies\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Game.cpp
@@ -11,4 +11,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.80
+Time Elapsed 00:00:01.39
