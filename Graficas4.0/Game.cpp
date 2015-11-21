@@ -6,60 +6,66 @@
 #include<vector>
 #include<string>
 #include<stdio.h>
+#include"Model.h"
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void Do_Movement();
 
 
-void key_callback(GLFWwindow*, int, int, int, int);
+bool keys[1024];
+Camera cam(vec3(0.0f,0.0f,3.0f));
+
+GLfloat lastX = 400, lastY = 300;
+bool firstMouse = true;
+
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
 
 
-//constructors
+/*
+	this constructor initializes the game with it's properties,
+	initializes a window, sets some callbacks,
+	and initializes the triangle shown in the window.
+*/
 Game::Game(){
 
+	//this initializes the window
 	this->window = initializeWindow();
 	glfwSetKeyCallback(this->window, key_callback);
-#pragma region triangle_Data
-
-
-	float triangleVertices[3][3] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f, 
-		0.0f, 0.5f, 0.0f
-	};
-	glGenVertexArrays(1, &this->triangleVAO);
-	glBindVertexArray(this->triangleVAO);
-	GLuint triangleVBO;
-	glGenBuffers(1, &triangleVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), &triangleVertices, GL_STATIC_DRAW);
-	GLuint triangleVertexShader = compileShader("VertexShader.glsl", GL_VERTEX_SHADER);
-	GLuint triangleFragmentShader = compileShader("FragmentShader.glsl", GL_FRAGMENT_SHADER);
-	this->triangleShaderProgram = linkShader(triangleVertexShader, triangleFragmentShader);
-	glDeleteShader(triangleVertexShader);
-	glDeleteShader(triangleFragmentShader);
-#pragma endregion
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLAT), (void*)0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
+	glfwSetCursorPosCallback(this->window, mouse_callback);
 
 }
+
 Game::~Game(){
 	glfwDestroyWindow(this->window);
 }
 //app cycle
 void Game::run(){
+	Shader model("VertexShader.glsl", "FragmentShader.glsl");
 	while (!glfwWindowShouldClose(this->window)){
 
 		//check events
+		GLfloat currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		// Check and call events
 		glfwPollEvents();
+		Do_Movement();
+
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glm::mat4 projection = glm::perspective(cam.Zoom, (float)this->width / (float)this->height, 0.1f, 100.0f);
+		glm::mat4 view = cam.GetViewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(model.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(model.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
 
 		/////////////////
-		//render stuff
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(this->triangleShaderProgram);
-		glBindVertexArray(this->triangleVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
-
+		//render 
 		/////////////////
 		//swap buffers
 		glfwSwapBuffers(this->window);
@@ -69,15 +75,29 @@ void Game::run(){
 
 
 //program callbacks for keyboard
-void key_callback(GLFWwindow* wind, int key, int scancode, int action, int mode){
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
-		glfwSetWindowShouldClose(wind, GL_TRUE);
-	}
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode){
+	//cout << key << endl;
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (action == GLFW_PRESS)
+		keys[key] = true;
+	else if (action == GLFW_RELEASE)
+		keys[key] = false;
 }
 
 
 
-//utility functions.
+/*
+	utility functions.
+	those are utilities that are used throught the app
+*/
+
+
+/*
+	here initializes the windows and all it's parameters;
+*/
+
 GLFWwindow* Game::initializeWindow(){
 	glfwInit();
 	GLFWmonitor* mMon = glfwGetPrimaryMonitor();
@@ -90,6 +110,8 @@ GLFWwindow* Game::initializeWindow(){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	this->width = mode->width;
+	this->height = mode->height;
 
 	GLFWwindow* wind = glfwCreateWindow(mode->width, mode->height, "Survive", NULL , nullptr); //change to glfwGetPrimaryMonitor to fullscreen;
 	if (wind == nullptr){
@@ -110,85 +132,41 @@ GLFWwindow* Game::initializeWindow(){
 
 
 
-/*-----------------------------------------------
 
-Name:	compile
 
-Params:	sFile - path to a file
-a_iType - type of shader (fragment, vertex, geometry)
-
-Result:	Loads and compiles shader.
-
-/*---------------------------------------------*/
-GLuint Game::compileShader(char* path, int shader_mode){
-	GLuint shaderID;
-	FILE *fp;
-	fopen_s(&fp, path, "rt");
-	if (!fp) return false;
-	printf("reading shader %s\n", path);
-	//get all lines from file
-
-	std::vector<std::string> sLines;
-	char sLine[255];
-	while (fgets(sLine, 255, fp))sLines.push_back(sLine);
-	fclose(fp);
-
-	const char** sProgram = new const char*[(int)sLines.size()];
-	for (int i = 0; i < (int)sLines.size(); i++){
-		sProgram[i] = sLines[i].c_str();
-	}
-	
-	shaderID = glCreateShader(shader_mode);
-
-	glShaderSource(shaderID, (int)sLines.size(), sProgram, NULL);
-	glCompileShader(shaderID);
-
-	delete[] sProgram;
-	
-	int iCompilationStatus;
-	int infoLogLength;
-
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &iCompilationStatus);
-
-		
-	glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
-	std::vector<char> shaderErrorMessage(infoLogLength);
-	glGetShaderInfoLog(shaderID, infoLogLength, NULL, &shaderErrorMessage[0]);
-	GLint success;
-	GLchar infoLog[512];
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
-
-	if (!success)
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
 	{
-		glGetShaderInfoLog(shaderID, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
 	}
 
-	if (iCompilationStatus == GL_FALSE) return false;
-	return shaderID;
+	GLfloat xoffset = xpos - lastX;
+	GLfloat yoffset = lastY - ypos;  // Reversed since y-coordinates go from bottom to left
+
+	lastX = xpos;
+	lastY = ypos;
+
+	cam.ProcessMouseMovement(xoffset, yoffset);
 }
 
-/*-----------------------------------------------
 
-Name:	linkProgram
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	cam.ProcessMouseScroll(yoffset);
+}
 
-Params:	vertexShader - pointer to VS
-fragmentShader - pointer to FS
-
-Result:	links the shaders
-
-/*---------------------------------------------*/
-GLuint Game::linkShader(GLuint vertexShader, GLuint fragmentShader){
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	return shaderProgram;
-	GLint success;
-	GLchar infoLog[512];
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER LINKING FAILED" << infoLog;
-	}
+void Do_Movement()
+{
+	// Camera controls
+	if (keys[GLFW_KEY_W])
+		cam.ProcessKeyboard(FORWARD, deltaTime);
+	if (keys[GLFW_KEY_S])
+		cam.ProcessKeyboard(BACKWARD, deltaTime);
+	if (keys[GLFW_KEY_A])
+		cam.ProcessKeyboard(LEFT, deltaTime);
+	if (keys[GLFW_KEY_D])
+		cam.ProcessKeyboard(RIGHT, deltaTime);
 }
