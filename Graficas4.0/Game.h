@@ -23,10 +23,9 @@ public:
 	float projectionMatrix[4][4];
 	float viewMatrix[4][4];
 
-	int width, height;
+	float width, height;
 
 	//placeHere your models
-	Model *nano;
 	
 	//functions
 	void run();

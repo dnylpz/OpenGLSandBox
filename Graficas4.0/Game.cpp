@@ -43,7 +43,13 @@ Game::~Game(){
 }
 //app cycle
 void Game::run(){
+	
+	//Shaders here
 	Shader model("VertexShader.glsl", "FragmentShader.glsl");
+	//Models here
+	Model nano("models/nanosuit/nanosuit.obj");
+
+	//game loop
 	while (!glfwWindowShouldClose(this->window)){
 
 		//check events
@@ -58,14 +64,25 @@ void Game::run(){
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::mat4 projection = glm::perspective(cam.Zoom, (float)this->width / (float)this->height, 0.1f, 100.0f);
+		model.Use();
+
+		//matrices
+		glm::mat4 projection = glm::perspective(cam.Zoom, this->width/this->height, 0.1f, 100.0f);
 		glm::mat4 view = cam.GetViewMatrix();
-		glUniformMatrix4fv(glGetUniformLocation(model.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(model.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(model.Program, "projection"),
+			1,GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(model.Program, "view"), 1,
+			GL_FALSE, glm::value_ptr(view));
 
+		//Draw the loaded model;
 
-		/////////////////
-		//render 
+		glm::mat4 mod;
+		mod = glm::translate(mod, glm::vec3(0.0f, -1.75f, 0.0f));
+		mod = glm::scale(mod, glm::vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(glGetUniformLocation(model.Program, "model"),
+			1, GL_FALSE, glm::value_ptr(mod));
+		nano.Draw(model);
+
 		/////////////////
 		//swap buffers
 		glfwSwapBuffers(this->window);
@@ -127,6 +144,7 @@ GLFWwindow* Game::initializeWindow(){
 		std::cout << "something went Wrong";
 	}
 	glViewport(0, 0, mode->width, mode->height);
+	glEnable(GL_DEPTH_TEST);
 	return wind;
 }
 

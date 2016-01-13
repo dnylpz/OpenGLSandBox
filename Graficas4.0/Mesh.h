@@ -9,6 +9,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <glm/glm.hpp>
 
 using namespace std;
 /*
@@ -18,9 +19,9 @@ using namespace std;
 	vertice sobre la textura, no viceversa).
 */
 struct Vertex{
-	float Position[3];
-	float Normal[3];
-	float TexCoords[2];
+	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec2 TexCoords;
 };
 
 struct Texture{

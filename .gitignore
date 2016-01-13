@@ -204,3 +204,5 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+Graficas4.0/Graficas4.0.vcxproj
+Graficas4.0/Graficas4.0.vcxproj.filters

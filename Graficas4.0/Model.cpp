@@ -21,7 +21,7 @@ void Model::loadModel(string path){
 		cout << "ERROR::ASIMP::" << import.GetErrorString() << endl;
 		return;
 	}
-	this->directory = path.substr(0, path.find_first_of('/'));
+	this->directory = path.substr(0, path.find_last_of('/'));
 
 	this->processNode(scene->mRootNode, scene);
 }
@@ -50,24 +50,24 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		Vertex vertex;
 		
-		vertex.Position[1] = mesh->mVertices[i].x;
-		vertex.Position[2] = mesh->mVertices[i].y;
-		vertex.Position[3] = mesh->mVertices[i].z;
+		vertex.Position.x = mesh->mVertices[i].x;
+		vertex.Position.y = mesh->mVertices[i].y;
+		vertex.Position.z = mesh->mVertices[i].z;
 		if (mesh->mNormals)
 		{
-		vertex.Normal[1] = mesh->mNormals[i].x;
-		vertex.Normal[2] = mesh->mNormals[i].y;
-		vertex.Normal[3] = mesh->mNormals[i].z;
+		vertex.Normal.x = mesh->mNormals[i].x;
+		vertex.Normal.y = mesh->mNormals[i].y;
+		vertex.Normal.z = mesh->mNormals[i].z;
 		}
 		if (mesh->mTextureCoords[0])
 		{
 			
-			vertex.TexCoords[0] = mesh->mTextureCoords[0][i].x;
-			vertex.TexCoords[1] = mesh->mTextureCoords[0][i].y;
+			vertex.TexCoords.x = mesh->mTextureCoords[0][i].x;
+			vertex.TexCoords.y = mesh->mTextureCoords[0][i].y;
 		}else
 		{
-			vertex.TexCoords[0] = 0.0f;
-			vertex.TexCoords[1] = 0.0f;
+			vertex.TexCoords.x = 0.0f;
+			vertex.TexCoords.y = 0.0f;
 			
 		}
 		vertices.push_back(vertex);
